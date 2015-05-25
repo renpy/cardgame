@@ -1,15 +1,17 @@
 # cardgame.rpy - Cardgame support for Ren'Py
-# Copyright (C) 2008 PyTom <pytom@bishoujo.us>
 #
-# This software may be distributed in modified or unmodified form,
-# provided:
+# Copyright 2008-2015 Tom Rothamel <pytom@bishoujo.us>
 #
-# (1) This complete license notice is retained.
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation files
+# (the "Software"), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify, merge,
+# publish, distribute, sublicense, and/or sell copies of the Software,
+# and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
 #
-# (2) This software and all software and data files distributed
-# alongside this software and intended to be loaded in the same
-# memory space may be redistributed without requirement for
-# payment, notification, or other forms of compensation.
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 # EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
@@ -18,14 +20,11 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-#
-# Commercial licensing for this software is available, please
-# contact pytom@bishoujo.us for information.
 
 init python:
 
     import pygame
-    
+
     DRAG_NONE = 0
     DRAG_CARD = 1
     DRAG_ABOVE = 2
@@ -37,7 +36,7 @@ init python:
     def __rect_overlap_area(r1, r2):
         if r1 is None or r2 is None:
             return 0
-        
+
         x1, y1, w1, h1 = r1
         x2, y2, w2, h2 = r2
 
@@ -56,13 +55,13 @@ init python:
 
     def __default_can_drag(table, stack, card):
         return table.get_faceup(card)
-    
+
     class Table(renpy.Displayable):
 
         def __init__(self, back=None, base=None, springback=0.1, rotate=0.1, can_drag=__default_can_drag, doubleclick=.33, **kwargs):
 
             renpy.Displayable.__init__(self, **kwargs)
-            
+
             # A map from card value to the card object corresponding to
             # that value.
             self.cards = { }
@@ -96,26 +95,26 @@ init python:
 
             # Are we sensitive to input? [doc]
             self.sensitive = True
-            
+
             # The last click event.
             self.last_event = CardEvent()
-            
+
             # The card that has been clicked.
             self.click_card = None
 
             # The stack that has been clicked.
             self.click_stack = None
-            
+
             # The list of cards that are being dragged.
             self.drag_cards = [ ]
-            
+
             # Are we dragging the cards?
             self.dragging = False
-            
+
             # The position where we clicked.
             self.click_x = 0
             self.click_y = 0
-            
+
             # The amount of time we've been shown for.
             self.st = 0
 
@@ -138,13 +137,13 @@ init python:
         # This controls sensitivity.
         def set_sensitive(self, value):
             self.sensitive = value
-            
+
         def get_card(self, value):
             if value not in self.cards:
                 raise Exception("No card has the value %r." % value)
 
             return self.cards[value]
-            
+
         # This sets the faceup status of a card.
         def set_faceup(self, card, faceup=True):
             self.get_card(card).faceup = faceup
@@ -152,7 +151,7 @@ init python:
 
         def get_faceup(self, card):
             return self.get_card(card).faceup
-            
+
         # This sets the rotation of a card.
         def set_rotate(self, card, rotation):
             __Rotate(self.get_card(card), rotation)
@@ -160,7 +159,7 @@ init python:
 
         def get_rotate(self, card):
             return self.get_card(card).rotate.rotate_limit()
-            
+
         def add_marker(self, card, marker):
              self.get_card(card).markers.append(marker)
              renpy.redraw(self, 0)
@@ -177,8 +176,8 @@ init python:
         def stack(self, x, y, xoff=0, yoff=0, show=1024, base=None,
                   click=False, drag=DRAG_NONE, drop=False, hidden=False):
 
-            rv = __Stack(self, x, y, xoff, yoff, show, base, click, drag, drop, hidden) 
-            
+            rv = __Stack(self, x, y, xoff, yoff, show, base, click, drag, drop, hidden)
+
             self.stacks.append(rv)
             return rv
 
@@ -186,7 +185,7 @@ init python:
         def per_interact(self):
             renpy.redraw(self, 0)
 
-        
+
         def render(self, width, height, st, at):
 
             self.st = st
@@ -202,10 +201,10 @@ init python:
                     continue
 
                 s.render_to(rv, width, height, st, at)
-                
+
                 for c in s.cards:
                     c.render_to(rv, width, height, st, at)
-            
+
             return rv
 
         def event(self, ev, x, y, st):
@@ -219,7 +218,7 @@ init python:
 
             if (grabbed is not None) and (grabbed is not self):
                 return
-            
+
             if ev.type == pygame.MOUSEBUTTONDOWN and ev.button == 1:
 
                 if self.click_stack:
@@ -227,7 +226,7 @@ init python:
 
                 stack = None
                 card = None
-                
+
                 for s in self.stacks:
 
                     sx, sy, sw, sh = s.rect
@@ -243,27 +242,27 @@ init python:
                         if cx <= x and cy <= y and cx + cw > x and cy + ch > y:
                             card = c
                             stack = c.stack
-                            
+
                 if stack is None:
                     return
 
                 # Grab the display.
                 renpy.display.focus.set_grab(self)
-                
+
                 # Don't let the user grab a moving card.
                 if card is not None:
                     xoffset, yoffset = card.offset.offset()
                     if xoffset or yoffset:
                         return
-                    
+
                 # Move the stack containing the card to the front.
                 self.stacks.remove(stack)
                 self.stacks.append(stack)
-                
+
                 if stack.click or stack.drag:
                     self.click_card = card
                     self.click_stack = stack
-                
+
                 if card is None or not self.can_drag(self, card.stack, card.value):
                     self.drag_cards = [ ]
                 elif card.stack.drag == DRAG_CARD:
@@ -283,13 +282,13 @@ init python:
 
                 for c in self.drag_cards:
                     c.offset = __Fixed(0, 0)
-                        
+
                 self.click_x = x
                 self.click_y = y
                 self.dragging = False
-                
+
                 renpy.redraw(self, 0)
-                
+
                 raise renpy.IgnoreEvent()
 
             if ev.type == pygame.MOUSEMOTION or (ev.type == pygame.MOUSEBUTTONUP and ev.button == 1):
@@ -302,12 +301,12 @@ init python:
 
                 for c in self.drag_cards:
                     xoffset, yoffset = c.offset.offset()
-                    
+
                     cdx = dx - xoffset
                     cdy = dy - yoffset
 
                     c.offset = __Fixed(dx, dy)
-                    
+
                     if c.rect:
                         cx, cy, cw, ch = c.rect
                         cx += cdx
@@ -315,13 +314,13 @@ init python:
                         c.rect = (cx, cy, cw, ch)
 
                 area = 0
-                dststack = None 
+                dststack = None
                 dstcard = None
-                
+
                 for s in self.stacks:
                     if not s.drop:
                         continue
-                    
+
                     for c in self.drag_cards:
 
                         if c.stack == s:
@@ -331,7 +330,7 @@ init python:
                             dststack = s
                             dstcard = None
                             area = a
-                            
+
                         for c1 in s.cards:
                             a = __rect_overlap_area(c.rect, c1.rect)
                             if a >= area:
@@ -368,10 +367,10 @@ init python:
                         if dstcard:
                             evt.drop_card = dstcard.value
                         evt.time = st
-                            
+
                 else:
 
-                    if self.click_stack.click:                    
+                    if self.click_stack.click:
 
                         evt = CardEvent()
                         evt.type = "click"
@@ -393,20 +392,20 @@ init python:
 
                 if evt is not None:
                     self.last_event = evt
-                        
+
                 for c in self.drag_cards:
                     c.springback()
-                    
+
                 self.click_card = None
                 self.click_stack = None
                 self.drag_cards = [ ]
 
-                if evt is not None: 
+                if evt is not None:
                     return evt
                 else:
                     raise renpy.IgnoreEvent()
 
-                
+
     class CardEvent(object):
 
         def __init__(self):
@@ -417,7 +416,7 @@ init python:
             self.drop_stack = None
             self.drop_card = None
             self.time = 0
-            
+
     # Represents a stack of one or more cards, which can be placed on the
     # table.
     class __Stack(object):
@@ -464,13 +463,13 @@ init python:
 
             # Is this stack hidden?
             self.hidden = hidden
-            
+
             # The list of cards in this stack.
             self.cards = [ ]
 
             # The rectangle for the background of this effect.
             self.rect = None
-            
+
         def insert(self, index, card):
             card = self.table.get_card(card)
 
@@ -482,17 +481,17 @@ init python:
 
             self.table.stacks.remove(self)
             self.table.stacks.append(self)
-            
+
             card.springback()
-            
+
         def append(self, card):
-            if card in self.cards:                
+            if card in self.cards:
                 self.insert(len(self.cards) - 1, card)
             else:
                 self.insert(len(self.cards), card)
 
         def remove(self, card):
-            card = self.table.get_card(card)            
+            card = self.table.get_card(card)
             self.cards.remove(card)
             card.stack = None
             card.rect = None
@@ -500,7 +499,7 @@ init python:
         def deal(self):
             if not self.cards:
                 return None
-                
+
             card = self.cards[-1]
             self.remove(card.value)
             return card.value
@@ -508,7 +507,7 @@ init python:
         def shuffle(self):
             renpy.random.shuffle(self.cards)
             renpy.redraw(self.table, 0)
-            
+
         def __len__(self):
             return len(self.cards)
 
@@ -521,7 +520,7 @@ init python:
 
         def __contains__(self, item):
             return self.table.get_card(card) in self.cards
-                
+
         def render_to(self, rv, width, height, st, at):
 
             base = self.base or self.table.base
@@ -537,7 +536,7 @@ init python:
 
             self.rect = (cx, cy, cw, ch)
             rv.blit(surf, (cx, cy))
-            
+
     class __Card(object):
 
         def __init__(self, table, value, face, back):
@@ -571,13 +570,13 @@ init python:
             # An object that gives the offset of this card relative to
             # where it would normally be placed.
             self.offset = __Fixed(0, 0)
-            
+
             # The rectangle where this card was last drawn to the screen
             # at.
             self.rect = None
 
             __Rotate(self, 0)
-            
+
         # Returns the base x and y placement of this card.
         def place(self):
             s = self.stack
@@ -591,9 +590,9 @@ init python:
                 self.offset = __Fixed(0, 0)
             else:
                 self.offset = __Springback(self)
-                        
+
         def render_to(self, rv, width, height, st, at):
-            
+
             x, y = self.place()
             xoffset, yoffset = self.offset.offset()
             x += xoffset
@@ -603,7 +602,7 @@ init python:
                 d = self.face
             else:
                 d = self.back or self.table.back
-                
+
             # TODO: Figure out if we can reuse some of this.
 
             if self.highlights:
@@ -612,7 +611,7 @@ init python:
             r = self.rotate.rotate()
             if r:
                 d = RotoZoom(r, r, 0, 1, 1, 0)(d)
-                
+
             surf = renpy.render(d, width, height, st, at)
             w, h = surf.get_size()
 
@@ -622,17 +621,17 @@ init python:
             self.rect = (x, y, w, h)
 
             rv.blit(surf, (x, y))
-            
+
         def __repr__(self):
             return "<__Card %r>" % self.value
-        
+
 
     class __Springback(object):
 
         def __init__(self, card):
             self.card = card
             self.table = table = card.table
-            
+
             self.start = table.st
 
             cx, cy, cw, ch = self.card.rect
@@ -646,12 +645,12 @@ init python:
 
             t = (self.table.st - self.start) / self.table.springback
             t = min(t, 1.0)
-            
+
             if t < 1.0:
                 renpy.redraw(self.table, 0)
 
-            px, py = self.card.place() 
-                
+            px, py = self.card.place()
+
             return int((self.startx - px) * (1.0 - t)), int((self.starty - py) * (1.0 - t))
 
 
@@ -662,14 +661,14 @@ init python:
 
         def offset(self):
             return self.x, self.y
-        
+
 
     class __Rotate(object):
         def __init__(self, card, amount):
 
             self.table = table = card.table
             self.start = table.st
-            
+
             if card.rotate is None:
                 self.start_rotate = amount
             else:
@@ -679,7 +678,7 @@ init python:
 
             card.rotate = self
 
-            
+
         def rotate(self):
 
             if self.start_rotate == self.end_rotate:
@@ -692,6 +691,6 @@ init python:
                 renpy.redraw(self.table, 0)
 
             return self.start_rotate + (self.end_rotate - self.start_rotate) * t
-        
+
         def rotate_limit(self):
             return self.end_rotate

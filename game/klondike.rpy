@@ -1,15 +1,17 @@
 # klondike.rpy - Klondike Solitaire
-# Copyright (C) 2008 PyTom <pytom@bishoujo.us>
 #
-# This software may be distributed in modified or unmodified form,
-# provided:
+# Copyright 2008-2015 Tom Rothamel <pytom@bishoujo.us>
 #
-# (1) This complete license notice is retained.
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation files
+# (the "Software"), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify, merge,
+# publish, distribute, sublicense, and/or sell copies of the Software,
+# and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
 #
-# (2) This software and all software and data files distributed
-# alongside this software and intended to be loaded in the same
-# memory space may be redistributed without requirement for
-# payment, notification, or other forms of compensation.
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 # EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
@@ -18,9 +20,7 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-#
-# Commercial licensing for this software is available, please
-# contact pytom@bishoujo.us for information.
+
 
 init python:
 
@@ -28,12 +28,12 @@ init python:
 
         # We represent a card as a (suit, rank) tuple. The suit is one of the
         # following four constants, while the rank is 1 for ace, 2 for 2,
-        # ..., 10 for 10, 11 for jack, 12 for queen, 13 for king.        
+        # ..., 10 for 10, 11 for jack, 12 for queen, 13 for king.
         CLUB = 0
         SPADE = 1
         HEART = 2
         DIAMOND = 3
-        
+
         def __init__(self, deal=3):
 
             # Constants that let us easily change where the game is
@@ -47,7 +47,7 @@ init python:
 
             # Store the parameters.
             self.deal = deal
-            
+
             # Create the table, stock, and waste.
             self.table = t = Table(base="card/base.png", back="card/back.png")
             self.stock = t.stack(LEFT, TOP, xoff=0, yoff=0, click=True)
@@ -72,14 +72,14 @@ init python:
                     t.card(value, "card/%d.png" % self.card_num(suit, rank))
                     t.set_faceup(value, False)
                     self.stock.append(value)
-                    
+
             self.stock.shuffle()
-            
+
             # Deal out the initial tableau.
             for i in range(0, 7):
                 for j in range(i, 7):
                     c = self.stock.deal()
-                    self.tableau[j].append(c)                    
+                    self.tableau[j].append(c)
 
             # Ensure that the bottom of each tableau is faceup.
             for i in range(0, 7):
@@ -91,13 +91,13 @@ init python:
         def card_num(self, suit, rank):
             ranks = [ None, 1, 49, 45, 41, 37, 33, 29, 25, 21, 17, 13, 9, 5 ]
             return suit + ranks[rank]
-                
+
         def show(self):
             self.table.show()
 
         def hide(self):
             self.table.hide()
-            
+
         def tableau_drag(self, evt):
 
             card = evt.drag_cards[0]
@@ -105,7 +105,7 @@ init python:
             stack = evt.drop_stack
 
             csuit, crank = card
-            
+
             # If the stack is empty, allow a king to be dragged to it.
             if not stack:
                 if crank == 13:
@@ -132,7 +132,7 @@ init python:
                 return "tableau_drag"
 
             return False
-                    
+
         def foundation_drag(self, evt):
 
             # We can only drag one card at a time to a foundation.
@@ -149,7 +149,7 @@ init python:
                 if suit == dsuit and rank == drank + 1:
                     evt.drop_stack.append(evt.drag_cards[0])
                     return "foundation_drag"
-                    
+
             # Otherwise, make sure we're dropping an ace.
             else:
                 if rank == 1:
@@ -157,7 +157,7 @@ init python:
                     return "foundation_drag"
 
             return False
-                
+
         def tableau_doubleclick(self, evt):
 
             # Make sure that there's at least one card in the stack.
@@ -182,14 +182,14 @@ init python:
             for i in self.foundations:
                 if not i:
                     continue
-                
+
                 fsuit, frank = i[-1]
                 if suit == fsuit and rank == frank + 1:
                     i.append(card)
                     return "foundation_drag"
 
             return False
-        
+
         def stock_click(self, evt):
 
             # If there are cards in the stock, dispense up to three3
@@ -202,7 +202,7 @@ init python:
                         self.waste.append(c)
 
                 return "stock_click"
-                        
+
             # Otherwise, move the contents of the waste to the stock.
             else:
                 while self.waste:
@@ -212,29 +212,29 @@ init python:
 
                 return "stock_click"
 
-                    
+
         def interact(self):
 
             evt = ui.interact()
             rv = False
-            
+
             # Check the various events, and dispatch them to the methods
             # that handle them.
             if evt.type == "drag":
                 if evt.drop_stack in self.tableau:
                     rv = self.tableau_drag(evt)
-                    
+
                 elif evt.drop_stack in self.foundations:
                     rv = self.foundation_drag(evt)
-                    
+
             elif evt.type == "click":
                 if evt.stack == self.stock:
                     rv = self.stock_click(evt)
-                    
+
             elif evt.type == "doubleclick":
                 if (evt.stack in self.tableau) or (evt.stack is self.waste):
                     rv = self.tableau_doubleclick(evt)
-                    
+
             # Ensure that the bottom card in each tableau is faceup.
             for i in range(0, 7):
                 if self.tableau[i]:
@@ -252,7 +252,7 @@ init python:
         # Sets things as sensitive (or not).
         def set_sensitive(self, value):
             self.table.set_sensitive(value)
-        
+
         # Utility functions.
 
         # Is it okay to drag the over card onto under, where under is
@@ -263,7 +263,7 @@ init python:
 
             if orank == 1:
                 return False
-            
+
             ublack = (usuit == self.SPADE) or (usuit == self.CLUB)
             oblack = (osuit == self.SPADE) or (osuit == self.CLUB)
 
@@ -307,9 +307,9 @@ init python:
 
                     if self.can_hint(under, over):
                         return (under, over)
-                
+
             return None, None
-            
+
         def card_name(self, c):
             suit, rank = c
 
@@ -332,5 +332,5 @@ init python:
                 "Spades",
                 "Hearts",
                 "Diamonds" ][suit]
-                     
-                    
+
+
