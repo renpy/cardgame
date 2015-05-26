@@ -1,6 +1,6 @@
-========
-Cardgame
-========
+=========================
+Ren'Py Cardgame Framework
+=========================
 
 Cardgame is a framework that provides primitives for creating cardgames
 with Ren'Py. The cardgame engine does not actually implement any card
@@ -53,7 +53,7 @@ free for commercial use. ::
     WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 Concepts
-=======
+========
 
 There are four concepts that are used by cardgame: tables, cards, stacks, and card events.
 
@@ -124,7 +124,7 @@ Table
             the Table constructor is used.
 
 
-    .. method stack(x, y, xoff=0, yoff=0, show=1024, base=None, click=False, drag=DRAG_NONE, drop=False, hidden=False)
+    .. method:: stack(x, y, xoff=0, yoff=0, show=1024, base=None, click=False, drag=DRAG_NONE, drop=False, hidden=False)
 
         Declares a new stack of cards, and returns the Stack object.
 
@@ -155,27 +155,91 @@ Table
         `hidden`
             If True, this stack will not be shown on the screen.
 
-        .. method:: set_sensitive(value)
-            Determines if this table will respond to events. If value is false,
-            the table will stop responding to events until this is called with
-            `value` true.
+    .. method:: show(layer='master')
+        Shows this table on `layer`.
 
-        .. method:: set_faceup(card, faceup=True)
-            Determines if `card` will be displayed face up or face down. The card
-            is displayed face up if `faceup` is True.
+    .. method:: hide(layer='master')
+        Hides this table from `layer`
 
-        .. method:: get_faceup(card)
-            Returns True if the `card` is faceup and False otherwise.
+    .. method:: set_sensitive(value)
+        Determines if this table will respond to events. If value is false,
+        the table will stop responding to events until this is called with
+        `value` true.
 
-        .. method:: set_rotate(card, rotation)
-            Sets the rotation of `card` to `rotation` degrees. Rotation quality
-            leaves something to be desired.
+    .. method:: set_faceup(card, faceup=True)
+        Determines if `card` will be displayed face up or face down. The card
+        is displayed face up if `faceup` is True.
 
-        .. method:: get_rotate(card)
-            Returns the rotation of `card`, in degrees.
+    .. method:: get_faceup(card)
+        Returns True if the `card` is faceup and False otherwise.
 
-        .. method:: add_marker(card, marker)
-            Adds a marker to the card. `marker` should be a Displayable.
+    .. method:: set_rotate(card, rotation)
+        Sets the rotation of `card` to `rotation` degrees. Rotation quality
+        leaves something to be desired.
 
-        .. method:: remove_marker(card, marker):
-            Removes `marker` from `card`.
+    .. method:: get_rotate(card)
+        Returns the rotation of `card`, in degrees.
+
+    .. method:: add_marker(card, marker)
+        Adds a marker to the card. `marker` should be a Displayable.
+
+    .. method:: remove_marker(card, marker):
+        Removes `marker` from `card`.
+
+Stack
+=====
+
+.. class:: Stack
+
+    Stack objects represent stacks of cards, and are created by the Table.stack
+    method.
+
+    Stack support basic list operations, like len(), indexing, membership tests,
+    and iteration. Cards are placed in the list in bottom to top order.
+
+    Stack objects also support the following methods:
+
+    .. method:: insert(index, card)
+        Inserts `card` in the stack at index, where 0 is the bottom of the stack
+        and len(s) is the top of the stack. If the card is in a stack, animates
+        the card moving to the new stack.
+
+    .. method:: append(card)
+        Places `card` on the top of the stack. If the card is in a stack,
+        animates the card moving to the top of the stack.
+
+    .. method:: remove(card)
+        Removes card from the stack.
+
+    .. method:: deal()
+        Removes the card at the top of the stack from the stack, and returns it. Returns None if the stack is empty.
+
+    .. method:: shuffle()
+        Rearranges the cards in the stack in a random order.
+
+CardEvent
+=========
+
+.. class:: CardEvent
+
+    CardEvent objects are returned from ui.interact() when events happen while a
+    Table is sensitive. All event objects have the following fields defined:
+
+    type
+        One of "drag", "click", or "doubleclick", giving the type of event this is.
+    table
+        The table this event is associated with.
+    stack
+        The stack that has been clicked or dragged from.
+    card
+        The card that has been clicked or dragged. None for a click on the stack.
+
+    Drag events also have the following fields defined.
+
+    drag_cards
+        A list of cards being dragged.
+    drop_stack
+        The stack the cards are being dropped on.
+    drop_card
+        The card the cards are being dropped on, if any, If this is None, the
+        cards were dropped onto an empty stack.
