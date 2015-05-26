@@ -156,34 +156,43 @@ Table
             If True, this stack will not be shown on the screen.
 
     .. method:: show(layer='master')
+
         Shows this table on `layer`.
 
     .. method:: hide(layer='master')
+
         Hides this table from `layer`
 
     .. method:: set_sensitive(value)
+
         Determines if this table will respond to events. If value is false,
         the table will stop responding to events until this is called with
         `value` true.
 
     .. method:: set_faceup(card, faceup=True)
+
         Determines if `card` will be displayed face up or face down. The card
         is displayed face up if `faceup` is True.
 
     .. method:: get_faceup(card)
+
         Returns True if the `card` is faceup and False otherwise.
 
     .. method:: set_rotate(card, rotation)
+
         Sets the rotation of `card` to `rotation` degrees. Rotation quality
         leaves something to be desired.
 
     .. method:: get_rotate(card)
+
         Returns the rotation of `card`, in degrees.
 
     .. method:: add_marker(card, marker)
+
         Adds a marker to the card. `marker` should be a Displayable.
 
     .. method:: remove_marker(card, marker):
+
         Removes `marker` from `card`.
 
 Stack
@@ -200,21 +209,26 @@ Stack
     Stack objects also support the following methods:
 
     .. method:: insert(index, card)
+
         Inserts `card` in the stack at index, where 0 is the bottom of the stack
         and len(s) is the top of the stack. If the card is in a stack, animates
         the card moving to the new stack.
 
     .. method:: append(card)
+
         Places `card` on the top of the stack. If the card is in a stack,
         animates the card moving to the top of the stack.
 
     .. method:: remove(card)
+
         Removes card from the stack.
 
     .. method:: deal()
+
         Removes the card at the top of the stack from the stack, and returns it. Returns None if the stack is empty.
 
     .. method:: shuffle()
+
         Rearranges the cards in the stack in a random order.
 
 CardEvent
