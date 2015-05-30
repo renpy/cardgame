@@ -561,8 +561,8 @@ init python:
             # be.
             self.rotate = None
 
-            # A series of highlights that should be drawn over this card.
-            self.highlights = [ ]
+            # A series of markers that should be drawn over this card.
+            self.markers = [ ]
 
             # The stack this card is in.
             self.stack = None
@@ -605,8 +605,8 @@ init python:
 
             # TODO: Figure out if we can reuse some of this.
 
-            if self.highlights:
-                d = Fixed(* ([d] + [renpy.easy.displayable(i) for i in self.highlights]))
+            if self.markers:
+                d = Fixed(* ([d] + [renpy.easy.displayable(i) for i in self.markers]))
 
             r = self.rotate.rotate()
             if r:
